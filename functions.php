@@ -213,4 +213,88 @@
     mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE kd_alternatif = $id");
     header('location:penilaian_read.php');
   }
+
+  function get_perhitungan_bobot() {
+    $perhitungan = get("SELECT * FROM tbl_penilaian");
+    $data = [];
+    foreach($perhitungan as $p) {
+      $alternatif = get("SELECT * FROM tbl_alternatif WHERE kd_alternatif = " . $p["kd_alternatif"]);
+      $kriteria = get("SELECT * FROM tbl_kriteria WHERE kd_kriteria = " . $p["kd_kriteria"]);
+      $nilai = $p["nilai"];
+      $subkriteria = $p["kd_sub"] ? (get("SELECT * FROM tbl_subkriteria WHERE kd_sub = " . $p["kd_sub"]))[0] : null;
+      
+      $isAlternatifExists = false;
+      foreach($data as &$alternatifExists) {
+        if($alternatifExists['alternatif']['kd_alternatif'] == $alternatif[0]['kd_alternatif']) {
+          $isAlternatifExists = true;
+          $alternatifExists['kriteria'][] = [
+            "kriteria" => $kriteria[0],
+            "subkriteria" => $subkriteria,
+            "nilai" => $nilai
+          ];
+          break;
+        }
+      }
+
+      if (!$isAlternatifExists) {
+        $data[] = [
+          "alternatif" => $alternatif[0],
+          "kriteria" => [
+            [
+              "kriteria" => $kriteria[0],
+              "subkriteria" => $subkriteria,
+              "nilai" => $nilai
+            ]
+          ]
+        ];
+      }
+    }
+
+    return $data;
+  }
+
+  function get_perhitungan_head() {
+    $head = [];
+    $kriteria = get("SELECT * FROM tbl_kriteria");
+    foreach($kriteria as $k) {
+      $head[] = $k["kode"];
+    }
+
+    return $head;
+  }
+
+  function get_squared_sum_column($matrix) {
+    $squared_sum_column = [];
+    foreach($matrix as $row) {
+      foreach($row as $col_index => $col) {
+        if(!isset($squared_sum_column[$col_index])) {
+          $squared_sum_column[$col_index] = 0;
+        }
+
+        $squared_sum_column[$col_index] += pow($col["nilai"], 2);
+      }
+    }
+
+    return $squared_sum_column;
+  }
+
+  function get_normalized_matrix($matrix, $squared_sum_column) {
+    $normalized_matrix = [];
+    foreach($matrix as $row) {
+      $normalized_row = [];
+      foreach($row as $col_index => $col) {
+        $sqrt_sum = sqrt($squared_sum_column[$col_index]);
+        $normalized_row[] = [
+          "nilai_normalized" => $col["nilai"] / $sqrt_sum,
+          "nilai" => $col["nilai"],
+          "bobot" => $col["bobot"],
+          "is_cost" => $col["is_cost"]
+        ];
+      }
+
+      $normalized_matrix[] = $normalized_row;
+    }
+
+    return $normalized_matrix;
+  }
 ?>

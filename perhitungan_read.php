@@ -1,8 +1,16 @@
 <?php
+  require 'functions.php';
   session_start();
+
   if(!isset($_SESSION['login'])) {
     header("location:login.php");
   }
+
+  $first_head = ["No.", "Kode Alternatif", "Nama Alternatif"];
+  $kriteria_head = get_perhitungan_head();
+  $head = array_merge($first_head, $kriteria_head);
+
+  $data = get_perhitungan_bobot();
 ?>
 
 <!doctype html>
@@ -46,7 +54,15 @@
             </li>
             <li class="nav-small-cap">
               <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-              <span class="hide-menu">SPK</span>
+              <span class="hide-menu">MASTER DATA</span>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href="alternatif_read.php" aria-expanded="false">
+                <span>
+                  <i class="ti ti-map-pin"></i>
+                </span>
+                <span class="hide-menu">Alternatif Lokasi</span>
+              </a>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="kriteria_read.php" aria-expanded="false">
@@ -64,13 +80,9 @@
                 <span class="hide-menu">Sub Kriteria Penilaian</span>
               </a>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="alternatif_read.php" aria-expanded="false">
-                <span>
-                  <i class="ti ti-map-pin"></i>
-                </span>
-                <span class="hide-menu">Alternatif Lokasi</span>
-              </a>
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+              <span class="hide-menu">SPK</span>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link" href="penilaian_read.php" aria-expanded="false">
@@ -80,8 +92,8 @@
                 <span class="hide-menu">Proses Penilaian</span>
               </a>
             </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link" href="perhitungan_read.php" aria-expanded="false">
+            <li class="sidebar-item selected">
+              <a class="sidebar-link active" href="perhitungan_read.php" aria-expanded="false">
                 <span>
                   <i class="ti ti-math-symbols"></i>
                 </span>
@@ -129,9 +141,233 @@
         </nav>
       </header>
       <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-12 d-flex justify-content-center align-items-center" style="height: calc(100vh - 119px) !important;">
-            Ini Dashboard
+        <div class="container-fluid">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="fs-6">
+                <i class="ti ti-database fs-6 me-2"></i>Data Perhitungan
+              </span>
+            </div>
+          </div>
+          <div class="card mt-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-semibold">
+                  <i class="ti ti-table me-2"></i>
+                  Tabel Nilai Alternatif
+                </h5>
+              </div>
+              <div class="table-responsive mt-3">
+                <?php $data_matrix = []; ?>
+                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <?php foreach($head as $h) : ?>
+                      <th class="border-bottom-1">
+                        <h6 class="fw-semibold mb-0"><?php echo $h ?></h6>
+                      </th>
+                      <?php endforeach; ?>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($data as $index => $d) : ?>
+                    <?php $data_martix_alternatif = []; ?>
+                    <tr>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
+                      </td>
+                      <?php foreach($kriteria_head as $kh) : ?>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0">
+                          <?php
+                            $nilai = 0; $bobot = 0; $is_cost = true;
+                            foreach($d["kriteria"] as $dk) {
+                              if($dk["kriteria"]["kode"] == $kh) {
+                                if(isset($dk["subkriteria"])) {
+                                  $nilai = (float)$dk["subkriteria"]["nilai"];
+                                } else if(isset($dk["nilai"])) {
+                                  $nilai = (float)$dk["nilai"];
+                                }
+                                $bobot = (float)$dk["kriteria"]["bobot"];
+                                $is_cost = $dk["kriteria"]["jenis"] === "Cost" ? true : false;
+                                break;
+                              }
+                            }
+
+                            $data_martix_alternatif[] = [
+                              "nilai" => $nilai,
+                              "bobot" => $bobot,
+                              "is_cost" => $is_cost
+                            ];
+                            echo number_format($nilai, 3);
+                          ?>
+                        </h6>
+                      </td>
+                      <?php endforeach;
+                        $data_matrix[] = $data_martix_alternatif; ?>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+              <br><br>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-semibold">
+                  <i class="ti ti-table me-2"></i>
+                  Tabel Nilai Normalisasi Matriks
+                </h5>
+              </div>
+              <div class="table-responsive mt-3">
+                <?php $normalized_matrix = get_normalized_matrix($data_matrix, get_squared_sum_column($data_matrix)); ?>
+                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <?php foreach($head as $h) : ?>
+                      <th class="border-bottom-1">
+                        <h6 class="fw-semibold mb-0"><?php echo $h ?></h6>
+                      </th>
+                      <?php endforeach; ?>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($data as $index => $d) : ?>
+                    <tr>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
+                      </td>
+                      <?php foreach($normalized_matrix[$index] as $normalized_value) : ?>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0">
+                          <?php
+                            echo number_format($normalized_value["nilai_normalized"], 3);
+                          ?>
+                        </h6>
+                      </td>
+                      <?php endforeach; ?>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+              <br><br>
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-semibold">
+                  <i class="ti ti-table me-2"></i>
+                  Tabel Nilai Normalisasi Matriks Terbobot
+                </h5>
+              </div>
+              <div class="table-responsive mt-3">
+                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <?php foreach($head as $h) : ?>
+                      <th class="border-bottom-1">
+                        <h6 class="fw-semibold mb-0"><?php echo $h ?></h6>
+                      </th>
+                      <?php endforeach; ?>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($data as $index => $d) : ?>
+                    <tr>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
+                      </td>
+                      <?php foreach($normalized_matrix[$index] as $normalized_value) : ?>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0">
+                          <?php
+                            echo number_format($normalized_value["nilai_normalized"] * $normalized_value["bobot"], 3);
+                          ?>
+                        </h6>
+                      </td>
+                      <?php endforeach; ?>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+              <br><br>
+
+              <div class="d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-semibold">
+                  <i class="ti ti-table me-2"></i>
+                  Tabel Optimasi Atribut
+                </h5>
+              </div>
+              <div class="table-responsive mt-3">
+                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <?php foreach(["No.", "Kode Alternatif", "Nama Alternatif", "Maksimum", "Minimum", "Yi (Max-Min)"] as $h) : ?>
+                      <th class="border-bottom-1">
+                        <h6 class="fw-semibold mb-0"><?php echo $h ?></h6>
+                      </th>
+                      <?php endforeach; ?>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php foreach($data as $index => $d) : ?>
+                    <tr>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
+                      </td>
+                      <?php 
+                        $max = 0;
+                        $min = 0;
+                        $yi = 0;
+
+                        foreach($normalized_matrix[$index] as $normalized_value) {
+                          if($normalized_value["is_cost"]) {
+                            $min += $normalized_value["nilai_normalized"] * $normalized_value["bobot"];
+                          } else {
+                            $max += $normalized_value["nilai_normalized"] * $normalized_value["bobot"];
+                          }
+                        }
+
+                        $yi = $max - $min;
+                      ?>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo number_format($max, 3) ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo number_format($min, 3) ?></h6>
+                      </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo number_format($yi, 3) ?></h6>
+                      </td>
+                    </tr>
+                    <?php endforeach; ?>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
