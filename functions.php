@@ -214,7 +214,7 @@
     header('location:penilaian_read.php');
   }
 
-  function get_perhitungan_bobot() {
+  function get_perhitungan() {
     $perhitungan = get("SELECT * FROM tbl_penilaian");
     $data = [];
     foreach($perhitungan as $p) {
@@ -296,5 +296,66 @@
     }
 
     return $normalized_matrix;
+  }
+
+  function get_hasil() { //masih bisa dioptimized codingannya
+    $kriteria_head = get_perhitungan_head();
+    $data = get_perhitungan();
+
+    $data_matrix = [];
+    foreach($data as $index => $d) {
+      $data_matrix_alternatif = [];
+
+      foreach($kriteria_head as $kh) {
+        foreach($d["kriteria"] as $dk) {
+          if($dk["kriteria"]["kode"] == $kh) {
+            if(isset($dk["subkriteria"])) {
+              $nilai = (float)$dk["subkriteria"]["nilai"];
+            } else if(isset($dk["nilai"])) {
+              $nilai = (float)$dk["nilai"];
+            }
+            $bobot = (float)$dk["kriteria"]["bobot"];
+            $is_cost = $dk["kriteria"]["jenis"] === "Cost" ? true : false;
+            break;
+          }
+        }
+
+        $data_matrix_alternatif[] = [
+          "nilai" => $nilai,
+          "bobot" => $bobot,
+          "is_cost" => $is_cost
+        ];
+      }
+
+      $data_matrix[] = $data_matrix_alternatif;
+    }
+
+    $normalized_matrix = get_normalized_matrix($data_matrix, get_squared_sum_column($data_matrix));
+    
+    $data_result = [];
+    foreach($data as $index => $d) {
+      $max = 0;
+      $min = 0;
+      $yi = 0;
+
+      foreach($normalized_matrix[$index] as $normalized_value) {
+        if($normalized_value["is_cost"]) {
+          $min += $normalized_value["nilai_normalized"] * $normalized_value["bobot"];
+        } else {
+          $max += $normalized_value["nilai_normalized"] * $normalized_value["bobot"];
+        }
+      }
+
+      $yi = $max - $min;
+      $data_result[] = [
+        "kode" => $d["alternatif"]["kode"],
+        "nama" => $d["alternatif"]["nama"],
+        "min" => $min,
+        "max" => $max,
+        "yi" => $yi
+      ];
+    }
+
+    return $data_result;
   }
 ?>

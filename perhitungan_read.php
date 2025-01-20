@@ -10,7 +10,7 @@
   $kriteria_head = get_perhitungan_head();
   $head = array_merge($first_head, $kriteria_head);
 
-  $data = get_perhitungan_bobot();
+  $data = get_perhitungan();
 ?>
 
 <!doctype html>
@@ -302,66 +302,6 @@
                         </h6>
                       </td>
                       <?php endforeach; ?>
-                    </tr>
-                    <?php endforeach; ?>
-                  </tbody>
-                </table>
-              </div>
-              <br><br>
-
-              <div class="d-flex justify-content-between align-items-center">
-                <h5 class="card-title fw-semibold">
-                  <i class="ti ti-table me-2"></i>
-                  Tabel Optimasi Atribut
-                </h5>
-              </div>
-              <div class="table-responsive mt-3">
-                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6">
-                  <thead class="text-dark fs-4">
-                    <tr>
-                      <?php foreach(["No.", "Kode Alternatif", "Nama Alternatif", "Maksimum", "Minimum", "Yi (Max-Min)"] as $h) : ?>
-                      <th class="border-bottom-1">
-                        <h6 class="fw-semibold mb-0"><?php echo $h ?></h6>
-                      </th>
-                      <?php endforeach; ?>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <?php foreach($data as $index => $d) : ?>
-                    <tr>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
-                      </td>
-                      <?php 
-                        $max = 0;
-                        $min = 0;
-                        $yi = 0;
-
-                        foreach($normalized_matrix[$index] as $normalized_value) {
-                          if($normalized_value["is_cost"]) {
-                            $min += $normalized_value["nilai_normalized"] * $normalized_value["bobot"];
-                          } else {
-                            $max += $normalized_value["nilai_normalized"] * $normalized_value["bobot"];
-                          }
-                        }
-
-                        $yi = $max - $min;
-                      ?>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo number_format($max, 3) ?></h6>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo number_format($min, 3) ?></h6>
-                      </td>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo number_format($yi, 3) ?></h6>
-                      </td>
                     </tr>
                     <?php endforeach; ?>
                   </tbody>
