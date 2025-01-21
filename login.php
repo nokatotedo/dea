@@ -20,7 +20,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mooraha</title>
+  <title>Mooha</title>
   <link rel="shortcut icon" type="image/png" href="assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="assets/css/styles.min.css" />
 </head>
@@ -37,7 +37,7 @@
               <div class="card-body">
                 <div class="text-nowrap logo-img text-center py-3 w-100 d-flex justify-content-center align-items-center gap-2">
                   <img src="assets/images/logos/dark-logo.svg" width="40" alt="">
-                  <span class="fw-bolder fs-6" style="color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));">Mooraha</span>
+                  <span class="fw-bolder fs-6" style="color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));">Mooha</span>
                 </div>
                 <p class="text-center">Sistem Pendukung Keputusan</p>
                 <?php if(isset($_GET['error'])) { ?>

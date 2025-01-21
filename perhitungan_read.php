@@ -19,7 +19,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mooraha</title>
+  <title>Mooha</title>
   <link rel="shortcut icon" type="image/png" href="assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="assets/css/styles.min.css" />
 </head>
@@ -32,7 +32,7 @@
         <div class="brand-logo d-flex align-items-center justify-content-between">
           <a href="index.php" class="text-nowrap logo-img d-flex justify-content-center align-items-center gap-2">
             <img src="assets/images/logos/dark-logo.svg" width="40" alt="" />
-            <span class="fw-bolder fs-6">Mooraha</span>
+            <span class="fw-bolder fs-6">Mooha</span>
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <i class="ti ti-x fs-8"></i>
