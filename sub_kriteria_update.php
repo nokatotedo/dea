@@ -240,7 +240,7 @@
                           data-bs-nama="<?php echo $d["nama"] ?>"
                           data-bs-nilai="<?php echo $d["nilai"] ?>"
                           data-bs-id="<?php echo $d["kd_sub"] ?>">Edit</button>
-                        <a href="sub_kriteria_update.php?delete=<?php echo $d["kd_sub"] ?>&id=<?php echo $kritera["kd_kriteria"] ?>" class="btn btn-danger">Hapus</a>
+                        <a href="sub_kriteria_update.php?delete=<?php echo $d["kd_sub"] ?>" class="btn btn-danger">Hapus</a>
                       </td>
                     </tr>
                     <?php endforeach; ?>
