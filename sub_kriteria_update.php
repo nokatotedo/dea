@@ -9,10 +9,10 @@
   $head = ["No.", "Sub Kriteria", "Nilai", "Aksi"];
   if(isset($_GET["id"])) {
     $id = $_GET['id'];
-    $result = get("SELECT * FROM tbl_kriteria WHERE kd_kriteria = '$id'");
+    $result = get("SELECT * FROM tbl_kriteria WHERE id_kriteria = '$id'");
     if($result) {
       $kriteria = $result[0];
-      $sub_kriteria = get("SELECT * FROM tbl_subkriteria WHERE kd_kriteria = '$id' ORDER BY nilai DESC");
+      $sub_kriteria = get("SELECT * FROM tbl_subkriteria WHERE id_kriteria = '$id' ORDER BY nilai DESC");
     } else {
       header('location:sub_kriteria_read.php');
     }
@@ -28,7 +28,7 @@
       "nama" => $nama,
       "nilai" => $nilai
     ];
-    update_sub_kriteria($_POST['kd_sub'], $data);
+    update_sub_kriteria($_POST['id_sub'], $data);
   }
 
   if(isset($_GET['delete'])) {
@@ -57,7 +57,7 @@
         </div>
         <div class="modal-body">
           <form method="post">
-            <input type="number" hidden id="kd_sub" name="kd_sub">
+            <input type="number" hidden id="id_sub" name="id_sub">
             <div class="mb-2">
               <label for="nama">Sub Kriteria</label>
               <input type="text" class="form-control" id="nama" name="nama" required>
@@ -239,8 +239,8 @@
                         <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleModal"
                           data-bs-nama="<?php echo $d["nama"] ?>"
                           data-bs-nilai="<?php echo $d["nilai"] ?>"
-                          data-bs-id="<?php echo $d["kd_sub"] ?>">Edit</button>
-                        <a href="sub_kriteria_update.php?delete=<?php echo $d["kd_sub"] ?>" class="btn btn-danger">Hapus</a>
+                          data-bs-id="<?php echo $d["id_sub"] ?>">Edit</button>
+                        <a href="sub_kriteria_update.php?delete=<?php echo $d["id_sub"] ?>" class="btn btn-danger">Hapus</a>
                       </td>
                     </tr>
                     <?php endforeach; ?>
@@ -270,7 +270,7 @@
 
       var modalNama = exampleModal.querySelector('#nama')
       var modalNilai = exampleModal.querySelector('#nilai')
-      var modalId = exampleModal.querySelector('#kd_sub')
+      var modalId = exampleModal.querySelector('#id_sub')
 
       modalNama.value = nama
       modalNilai.value = nilai

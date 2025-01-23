@@ -7,19 +7,19 @@
   }
 
   if(isset($_POST['create'])) {
-    $kd_kriteria = $_POST['kd_kriteria'];
+    $id_kriteria = $_POST['id_kriteria'];
     $nama = $_POST['nama'];
     $nilai = $_POST['nilai'];
 
     $data = [
-      "kd_kriteria" => $kd_kriteria,
+      "id_kriteria" => $id_kriteria,
       "nama" => $nama,
       "nilai" => $nilai
     ];
     create_sub_kriteria($data);
   }
 
-  $kriteria = get("SELECT kd_kriteria, nama, kode FROM tbl_kriteria");
+  $kriteria = get("SELECT id_kriteria, nama, kd_kriteria FROM tbl_kriteria");
 ?>
 
 <!doctype html>
@@ -173,11 +173,11 @@
               </div>
               <form class="row mt-3" method="post">
                 <div class="col-6 mb-2">
-                  <label for="kd_kriteria">Pilih Kriteria</label>
-                  <select class="form-select" id="kd_kriteria" name="kd_kriteria" required>
+                  <label for="id_kriteria">Pilih Kriteria</label>
+                  <select class="form-select" id="id_kriteria" name="id_kriteria" required>
                     <option disabled selected value="">Pilih</option>
                     <?php foreach($kriteria as $k) : ?>
-                      <option value="<?php echo $k["kd_kriteria"] ?>"><?php echo $k["kode"] ?> - <?php echo $k["nama"] ?></option>
+                      <option value="<?php echo $k["id_kriteria"] ?>"><?php echo $k["kd_kriteria"] ?> - <?php echo $k["nama"] ?></option>
                     <?php endforeach; ?>
                   </select>
                 </div>

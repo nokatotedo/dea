@@ -130,11 +130,11 @@
   function create_sub_kriteria($data) {
     global $conn;
 
-    $kd_kriteria = $data["kd_kriteria"];
+    $id_kriteria = $data["id_kriteria"];
     $nama = $data["nama"];
     $nilai = $data["nilai"];
-    $query = mysqli_query($conn, "INSERT INTO tbl_subkriteria (kd_kriteria, nama, nilai)
-      VALUES('$kd_kriteria', '$nama', '$nilai')
+    $query = mysqli_query($conn, "INSERT INTO tbl_subkriteria (id_kriteria, nama, nilai)
+      VALUES('$id_kriteria', '$nama', '$nilai')
     ");
 
     header('location:sub_kriteria_read.php');
@@ -148,13 +148,13 @@
     $query = "UPDATE tbl_subkriteria SET
       nama = '$nama',
       nilai = $nilai
-      WHERE kd_sub = $id
+      WHERE id_sub = $id
     ";
 
     mysqli_query($conn, $query);
-    $result = get("SELECT * FROM tbl_subkriteria WHERE kd_sub = '$id'");
+    $result = get("SELECT * FROM tbl_subkriteria WHERE id_sub = '$id'");
     $kriteria = $result[0];
-    $kriteria_id = $kriteria["kd_kriteria"];
+    $kriteria_id = $kriteria["id_kriteria"];
     header("location:sub_kriteria_update.php?id=$kriteria_id");
   }
 
@@ -164,11 +164,11 @@
     $id = (int)$id;
 
     if($id > 0) {
-      $result = get("SELECT * FROM tbl_subkriteria WHERE kd_sub = '$id'");
+      $result = get("SELECT * FROM tbl_subkriteria WHERE id_sub = '$id'");
       $kriteria = $result[0];
-      $kriteria_id = $kriteria["kd_kriteria"];
-      mysqli_query($conn, "DELETE FROM tbl_subkriteria WHERE kd_sub = '$id'");
-      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE kd_sub = '$id'");
+      $kriteria_id = $kriteria["id_kriteria"];
+      mysqli_query($conn, "DELETE FROM tbl_subkriteria WHERE id_sub = '$id'");
+      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE id_sub = '$id'");
     }
     
     header("location:sub_kriteria_update.php?id=$kriteria_id");

@@ -208,7 +208,7 @@
                         <h6 class="fw-normal mb-0"><?php echo $d["jenis"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo number_format($d["bobot"], 3) ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["bobot"] ?></h6>
                       </td>
                       <td class="border-bottom-0 d-flex gap-2">
                         <a href="kriteria_update.php?id=<?php echo $d["id_kriteria"] ?>" class="btn btn-warning">Edit</a>
