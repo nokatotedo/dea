@@ -177,7 +177,7 @@
                 <div class="me-4">Min</div>
               </div>
               <div class="table-responsive mt-3">
-                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6">
+                <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6" id="table">
                   <thead class="text-dark fs-4">
                     <tr>
                       <?php foreach(["No.", "Kode Alternatif", "Nama Alternatif", "Maksimum", "Minimum", "Yi (Max-Min)"] as $h) : ?>
@@ -212,6 +212,9 @@
                     <?php endforeach; ?>
                   </tbody>
                 </table>
+                <div class="w-full text-center">
+                  <button id="download" class="btn btn-outline-success mt-3">Download</button>
+                </div>
               </div>
             </div>
           </div>
@@ -225,6 +228,7 @@
   <script src="assets/js/app.min.js"></script>
   <script src="assets/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="assets/libs/simplebar/dist/simplebar.js"></script>
+  <script src="assets/libs/xlsx/xlsx.full.min.js"></script>
   <script>
     var chart = {
       series: [
@@ -317,6 +321,14 @@
 
     var chart = new ApexCharts(document.querySelector("#chart"), chart);
     chart.render();
+
+    document.getElementById('download').addEventListener('click', function() {
+      const table = document.getElementById('table');
+      const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+      const today = new Date();
+      const formattedDate = today.toISOString().slice(0, 10);
+      XLSX.writeFile(workbook, `Hasil - ${formattedDate}.xlsx`);
+    });
   </script>
 </body>
 
