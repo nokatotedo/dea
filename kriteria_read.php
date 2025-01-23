@@ -17,7 +17,7 @@
   $keyword = '';
   if(isset($_GET['search']) && !empty($_GET['search'])) {
     $keyword = htmlspecialchars($_GET['search']);
-    $data = get("SELECT * FROM tbl_kriteria WHERE nama LIKE '%$keyword%' OR kode LIKE '%$keyword%'");
+    $data = get("SELECT * FROM tbl_kriteria WHERE nama LIKE '%$keyword%' OR kd_kriteria LIKE '%$keyword%'");
   } else {
     $data = get("SELECT * FROM tbl_kriteria");
   }
@@ -199,7 +199,7 @@
                         <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["kode"] ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["kd_kriteria"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["nama"] ?></h6>
@@ -211,8 +211,8 @@
                         <h6 class="fw-normal mb-0"><?php echo number_format($d["bobot"], 3) ?></h6>
                       </td>
                       <td class="border-bottom-0 d-flex gap-2">
-                        <a href="kriteria_update.php?id=<?php echo $d["kd_kriteria"] ?>" class="btn btn-warning">Edit</a>
-                        <a href="kriteria_read.php?delete=<?php echo $d["kd_kriteria"] ?>" class="btn btn-danger">Hapus</button>
+                        <a href="kriteria_update.php?id=<?php echo $d["id_kriteria"] ?>" class="btn btn-warning">Edit</a>
+                        <a href="kriteria_read.php?delete=<?php echo $d["id_kriteria"] ?>" class="btn btn-danger">Hapus</button>
                       </td>
                     </tr>
                     <?php endforeach; ?>

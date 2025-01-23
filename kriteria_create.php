@@ -7,13 +7,13 @@
   }
 
   if(isset($_POST['create'])) {
-    $kode = $_POST['kode'];
+    $kd_kriteria = $_POST['kd_kriteria'];
     $nama = $_POST['nama'];
     $jenis = $_POST['jenis'];
     $bobot = $_POST['bobot'];
 
     $data = [
-      "kode" => $kode,
+      "kd_kriteria" => $kd_kriteria,
       "nama" => $nama,
       "jenis" => $jenis,
       "bobot" => $bobot
@@ -173,8 +173,8 @@
               </div>
               <form class="row mt-3" method="post">
                 <div class="col-6 mb-2">
-                  <label for="kode">Kode Kriteria</label>
-                  <input type="text" class="form-control" id="kode" name="kode" required>
+                  <label for="kd_kriteria">Kode Kriteria</label>
+                  <input type="text" class="form-control" id="kd_kriteria" name="kd_kriteria" required>
                 </div>
                 <div class="col-6 mb-2">
                   <label for="nama">Nama Kriteria</label>

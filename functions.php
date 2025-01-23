@@ -46,12 +46,12 @@
   function create_kriteria($data) {
     global $conn;
 
-    $kode = $data["kode"];
+    $kd_kriteria = $data["kd_kriteria"];
     $nama = $data["nama"];
     $jenis = $data["jenis"];
     $bobot = $data["bobot"];
-    $query = mysqli_query($conn, "INSERT INTO tbl_kriteria (kode, nama, jenis, bobot)
-      VALUES('$kode', '$nama', '$jenis', '$bobot')
+    $query = mysqli_query($conn, "INSERT INTO tbl_kriteria (kd_kriteria, nama, jenis, bobot)
+      VALUES('$kd_kriteria', '$nama', '$jenis', '$bobot')
     ");
 
     header('location:kriteria_read.php');
@@ -75,9 +75,9 @@
     $id = (int)$id;
 
     if($id > 0) {
-      mysqli_query($conn, "DELETE FROM tbl_kriteria WHERE kd_kriteria = '$id'");
-      mysqli_query($conn, "DELETE FROM tbl_subkriteria WHERE kd_kriteria = '$id'");
-      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE kd_kriteria = '$id'");
+      mysqli_query($conn, "DELETE FROM tbl_kriteria WHERE id_kriteria = '$id'");
+      mysqli_query($conn, "DELETE FROM tbl_subkriteria WHERE id_kriteria = '$id'");
+      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE id_kriteria = '$id'");
     }
     header('location:kriteria_read.php');
   }
@@ -96,7 +96,7 @@
   function update_kriteria($id, $data) {
     global $conn;
 
-    $kode = $data["kode"];
+    $kd_kriteria = $data["kd_kriteria"];
     $nama = $data["nama"];
     $jenis = $data["jenis"];
     $bobot = $data["bobot"];
@@ -104,8 +104,8 @@
       nama = '$nama',
       jenis = '$jenis',
       bobot = $bobot,
-      kode = '$kode'
-      WHERE kd_kriteria = $id
+      kd_kriteria = '$kd_kriteria'
+      WHERE id_kriteria = $id
     ";
 
     mysqli_query($conn, $query);
