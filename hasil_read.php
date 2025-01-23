@@ -177,10 +177,11 @@
                 <div class="me-4">Min</div>
               </div>
               <div class="table-responsive mt-3">
+                <div class="text-center fs-6 fw-bolder mb-3 d-none" id="table-title">Alternatif Lokasi Strategis Pembangunan Komplek Perumahan</div>
                 <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6" id="table">
                   <thead class="text-dark fs-4">
                     <tr>
-                      <?php foreach(["No.", "Kode Alternatif", "Nama Alternatif", "Maksimum", "Minimum", "Yi (Max-Min)"] as $h) : ?>
+                      <?php foreach(["Kode Alternatif", "Nama Alternatif", "Maksimum", "Minimum", "Yi (Max-Min)", "Ranking"] as $h) : ?>
                       <th class="border-bottom-1">
                         <h6 class="fw-semibold mb-0"><?php echo $h ?></h6>
                       </th>
@@ -190,9 +191,6 @@
                   <tbody>
                     <?php foreach($data as $index => $d) : ?>
                     <tr>
-                      <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
-                      </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["kd_alternatif"] ?></h6>
                       </td>
@@ -208,12 +206,18 @@
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo number_format($d["yi"], 3) ?></h6>
                       </td>
+                      <td class="border-bottom-0">
+                        <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
+                      </td>
                     </tr>
                     <?php endforeach; ?>
                   </tbody>
                 </table>
+                <?php if(isset($data[0])) : ?>
+                <div class="mt-3 text-center fst-italic">Dari hasil penilaian menggunakan metode MOORA, disimpulkan bahwa alternatif lokasi strategis pembangunan komplek perumahan ada di <span class="fw-bolder"><?php echo $data[0]["nama"] ?></span>.<br>Klik tombol cetak untuk export data.</div>
+                <?php endif; ?>
                 <div class="w-full text-center">
-                  <button id="download" class="btn btn-outline-success mt-3">Download</button>
+                  <button id="download" class="btn btn-outline-success mt-3" onclick="generateFile()">Cetak</button>
                 </div>
               </div>
             </div>
@@ -228,7 +232,7 @@
   <script src="assets/js/app.min.js"></script>
   <script src="assets/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="assets/libs/simplebar/dist/simplebar.js"></script>
-  <script src="assets/libs/xlsx/xlsx.full.min.js"></script>
+  <script src="assets/libs/html2pdf/html2pdf.bundle.min.js"></script>
   <script>
     var chart = {
       series: [
@@ -322,13 +326,39 @@
     var chart = new ApexCharts(document.querySelector("#chart"), chart);
     chart.render();
 
-    document.getElementById('download').addEventListener('click', function() {
-      const table = document.getElementById('table');
-      const workbook = XLSX.utils.table_to_book(table, { sheet: "Sheet1" });
+    function generateFile() {
+      const title = document.getElementById('table-title')
+      const element = document.getElementById('table')
+      const rows = table.querySelectorAll('tbody tr');
+      
+      const clonedTitle = title.cloneNode(true)
+      clonedTitle.classList.remove('d-none')
+      const wrapper = document.createElement('div')
+      wrapper.appendChild(clonedTitle)
+      wrapper.appendChild(element.cloneNode(true))
+
+      const clonedTable = wrapper.querySelector('table')
+      const clonedRows = clonedTable.querySelectorAll('tbody tr');
+      clonedRows[0].style.backgroundColor = '#d4edda'
+      
+      const options = {
+        margin: 10,
+        filename: `Hasil - ${getFormattedDate()}.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2},
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      }
+
+      html2pdf().set(options).from(wrapper).save()
+    }
+
+    function getFormattedDate() {
       const today = new Date();
-      const formattedDate = today.toISOString().slice(0, 10);
-      XLSX.writeFile(workbook, `Hasil - ${formattedDate}.xlsx`);
-    });
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
   </script>
 </body>
 
