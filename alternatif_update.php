@@ -7,13 +7,13 @@
   }
 
   $alternatif = [
-    "kd_alternatif" => '',
+    "id_alternatif" => '',
     "nama" => '',
-    "kode" => ''
+    "kd_alternatif" => ''
   ];
   if(isset($_GET['id'])) {
     $id = $_GET['id'];
-    $result = get("SELECT * FROM tbl_alternatif WHERE kd_alternatif = '$id'");
+    $result = get("SELECT * FROM tbl_alternatif WHERE id_alternatif = '$id'");
     if ($result) {
       $alternatif = $result[0];
     } else {
@@ -24,14 +24,14 @@
   }
 
   if(isset($_POST['update'])) {
-    $kode = $_POST['kode'];
+    $kd_alternatif = $_POST['kd_alternatif'];
     $nama = $_POST['nama'];
 
     $data = [
-      "kode" => $kode,
+      "kd_alternatif" => $kd_alternatif,
       "nama" => $nama,
     ];
-    update_alternatif($alternatif["kd_alternatif"], $data);
+    update_alternatif($alternatif["id_alternatif"], $data);
   }
 ?>
 
@@ -186,15 +186,15 @@
               </div>
               <form class="row mt-3" method="post">
                 <div class="col-6 mb-2">
-                  <label for="kode">Kode Alternatif</label>
-                  <input type="text" class="form-control" id="kode" name="kode" required value="<?php echo $alternatif['kode'] ?>">
+                  <label for="kd_alternatif">Kode Alternatif</label>
+                  <input type="text" class="form-control" id="kd_alternatif" name="kd_alternatif" required value="<?php echo $alternatif['kd_alternatif'] ?>">
                 </div>
                 <div class="col-6 mb-6">
                   <label for="nama">Nama Alternatif</label>
                   <input type="text" class="form-control" id="nama" name="nama" required value="<?php echo $alternatif['nama'] ?>">
                 </div>
                 <div class="d-flex justify-content-end gap-2">
-                  <a href="alternatif_update.php?id=<?php echo $alternatif["kd_alternatif"] ?>" class="btn btn-danger">Reset</a>
+                  <a href="alternatif_update.php?id=<?php echo $alternatif["id_alternatif"] ?>" class="btn btn-danger">Reset</a>
                   <button name="update" class="btn btn-primary">Simpan</button>
                 </div>
               </form>

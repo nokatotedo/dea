@@ -60,10 +60,10 @@
   function create_alternatif($data) {
     global $conn;
 
-    $kode = $data['kode'];
+    $kd_alternatif = $data['kd_alternatif'];
     $nama = $data['nama'];
-    $query = mysqli_query($conn, "INSERT INTO tbl_alternatif (kode, nama)
-      VALUES('$kode', '$nama')
+    $query = mysqli_query($conn, "INSERT INTO tbl_alternatif (kd_alternatif, nama)
+      VALUES('$kd_alternatif', '$nama')
     ");
 
     header('location:alternatif_read.php');
@@ -87,8 +87,8 @@
 
     $id = (int)$id;
     if($id > 0) {
-      mysqli_query($conn, "DELETE FROM tbl_alternatif WHERE kd_alternatif = '$id'");
-      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE kd_alternatif = '$id'");
+      mysqli_query($conn, "DELETE FROM tbl_alternatif WHERE id_alternatif = '$id'");
+      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE id_alternatif = '$id'");
     }
     header('location:alternatif_read.php');
   }
@@ -115,12 +115,12 @@
   function update_alternatif($id, $data) {
     global $conn;
 
-    $kode = $data['kode'];
+    $kd_alternatif = $data['kd_alternatif'];
     $nama = $data['nama'];
     $query = "UPDATE tbl_alternatif SET
       nama = '$nama',
-      kode = '$kode'
-      WHERE kd_alternatif = $id
+      kd_alternatif = '$kd_alternatif'
+      WHERE id_alternatif = $id
     ";
 
     mysqli_query($conn, $query);

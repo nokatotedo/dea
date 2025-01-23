@@ -7,11 +7,11 @@
   }
 
   if(isset($_POST['create'])) {
-    $kode = $_POST['kode'];
+    $kd_alternatif = $_POST['kd_alternatif'];
     $nama = $_POST['nama'];
 
     $data = [
-      "kode" => $kode,
+      "kd_alternatif" => $kd_alternatif,
       "nama" => $nama,
     ];
     create_alternatif($data);
@@ -169,8 +169,8 @@
               </div>
               <form class="row mt-3" method="post">
                 <div class="col-6 mb-2">
-                  <label for="kode">Kode Alternatif</label>
-                  <input type="text" class="form-control" id="kode" name="kode" required>
+                  <label for="kd_alternatif">Kode Alternatif</label>
+                  <input type="text" class="form-control" id="kd_alternatif" name="kd_alternatif" required>
                 </div>
                 <div class="col-6 mb-6">
                   <label for="nama">Nama Alternatif</label>
