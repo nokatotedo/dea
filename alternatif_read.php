@@ -17,7 +17,7 @@
   $keyword = '';
   if(isset($_GET['search']) && !empty($_GET['search'])) {
     $keyword = htmlspecialchars($_GET['search']);
-    $data = get("SELECT * FROM tbl_alternatif WHERE nama LIKE '%$keyword%' OR kode LIKE '%$keyword%'");
+    $data = get("SELECT * FROM tbl_alternatif WHERE nama LIKE '%$keyword%' OR kd_alternatif LIKE '%$keyword%'");
   } else {
     $data = get("SELECT * FROM tbl_alternatif");
   }
