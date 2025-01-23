@@ -194,7 +194,7 @@
                         <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["kode"] ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["kd_alternatif"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["nama"] ?></h6>

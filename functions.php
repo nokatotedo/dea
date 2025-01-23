@@ -133,6 +133,12 @@
     $id_kriteria = $data["id_kriteria"];
     $nama = $data["nama"];
     $nilai = $data["nilai"];
+    $kriteria = get("SELECT * FROM tbl_subkriteria WHERE id_kriteria = '$id_kriteria'");
+    if(count($kriteria) == 0) {
+      $id_kriteria_delete = (int)$id_kriteria;
+      mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE id_kriteria = '$id_kriteria_delete'");
+    }
+
     $query = mysqli_query($conn, "INSERT INTO tbl_subkriteria (id_kriteria, nama, nilai)
       VALUES('$id_kriteria', '$nama', '$nilai')
     ");
@@ -178,12 +184,12 @@
     global $conn;
 
     foreach($data as $d) {
-      $kd_alternatif = (int)$d['kd_alternatif'];
-      $kd_kriteria = (int)$d['kd_kriteria'];
-      $kd_sub = isset($d['kd_sub']) ? (int)$d["kd_sub"] : null;
+      $id_alternatif = (int)$d['id_alternatif'];
+      $id_kriteria = (int)$d['id_kriteria'];
+      $id_sub = isset($d['id_sub']) ? (int)$d["id_sub"] : null;
       $nilai = isset($d['nilai']) ? (float)$d['nilai'] : null;
-      $query = mysqli_query($conn, "INSERT INTO tbl_penilaian (kd_alternatif, kd_kriteria, kd_sub, nilai)
-        VALUES('$kd_alternatif', '$kd_kriteria', " . (is_null($kd_sub) ? 'NULL' : "'$kd_sub'") . ", " . (is_null($nilai) ? 'NULL' : "'$nilai'") . ")
+      $query = mysqli_query($conn, "INSERT INTO tbl_penilaian (id_alternatif, id_kriteria, id_sub, nilai)
+        VALUES('$id_alternatif', '$id_kriteria', " . (is_null($id_sub) ? 'NULL' : "'$id_sub'") . ", " . (is_null($nilai) ? 'NULL' : "'$nilai'") . ")
       ");
     }
 
@@ -193,14 +199,14 @@
   function update_penilaian($id, $data) {
     global $conn;
 
-    mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE kd_alternatif = $id");
+    mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE id_alternatif = $id");
     foreach($data as $d) {
-      $kd_alternatif = (int)$d['kd_alternatif'];
-      $kd_kriteria = (int)$d['kd_kriteria'];
-      $kd_sub = isset($d['kd_sub']) ? (int)$d["kd_sub"] : null;
+      $id_alternatif = (int)$d['id_alternatif'];
+      $id_kriteria = (int)$d['id_kriteria'];
+      $id_sub = isset($d['id_sub']) ? (int)$d["id_sub"] : null;
       $nilai = isset($d['nilai']) ? (float)$d['nilai'] : null;
-      $query = mysqli_query($conn, "INSERT INTO tbl_penilaian (kd_alternatif, kd_kriteria, kd_sub, nilai)
-        VALUES('$kd_alternatif', '$kd_kriteria', " . (is_null($kd_sub) ? 'NULL' : "'$kd_sub'") . ", " . (is_null($nilai) ? 'NULL' : "'$nilai'") . ")
+      $query = mysqli_query($conn, "INSERT INTO tbl_penilaian (id_alternatif, id_kriteria, id_sub, nilai)
+        VALUES('$id_alternatif', '$id_kriteria', " . (is_null($id_sub) ? 'NULL' : "'$id_sub'") . ", " . (is_null($nilai) ? 'NULL' : "'$nilai'") . ")
       ");
     }
 
@@ -210,7 +216,7 @@
   function delete_penilaian($id) {
     global $conn;
 
-    mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE kd_alternatif = $id");
+    mysqli_query($conn, "DELETE FROM tbl_penilaian WHERE id_alternatif = $id");
     header('location:penilaian_read.php');
   }
 
@@ -218,14 +224,14 @@
     $perhitungan = get("SELECT * FROM tbl_penilaian");
     $data = [];
     foreach($perhitungan as $p) {
-      $alternatif = get("SELECT * FROM tbl_alternatif WHERE kd_alternatif = " . $p["kd_alternatif"]);
-      $kriteria = get("SELECT * FROM tbl_kriteria WHERE kd_kriteria = " . $p["kd_kriteria"]);
+      $alternatif = get("SELECT * FROM tbl_alternatif WHERE id_alternatif = " . $p["id_alternatif"]);
+      $kriteria = get("SELECT * FROM tbl_kriteria WHERE id_kriteria = " . $p["id_kriteria"]);
       $nilai = $p["nilai"];
-      $subkriteria = $p["kd_sub"] ? (get("SELECT * FROM tbl_subkriteria WHERE kd_sub = " . $p["kd_sub"]))[0] : null;
+      $subkriteria = $p["id_sub"] ? (get("SELECT * FROM tbl_subkriteria WHERE id_sub = " . $p["id_sub"]))[0] : null;
       
       $isAlternatifExists = false;
       foreach($data as &$alternatifExists) {
-        if($alternatifExists['alternatif']['kd_alternatif'] == $alternatif[0]['kd_alternatif']) {
+        if($alternatifExists['alternatif']['id_alternatif'] == $alternatif[0]['id_alternatif']) {
           $isAlternatifExists = true;
           $alternatifExists['kriteria'][] = [
             "kriteria" => $kriteria[0],
@@ -257,7 +263,7 @@
     $head = [];
     $kriteria = get("SELECT * FROM tbl_kriteria");
     foreach($kriteria as $k) {
-      $head[] = $k["kode"];
+      $head[] = $k["kd_kriteria"];
     }
 
     return $head;
@@ -298,7 +304,7 @@
     return $normalized_matrix;
   }
 
-  function get_hasil() { //masih bisa dioptimized codingannya
+  function get_hasil() {
     $kriteria_head = get_perhitungan_head();
     $data = get_perhitungan();
 
@@ -308,7 +314,7 @@
 
       foreach($kriteria_head as $kh) {
         foreach($d["kriteria"] as $dk) {
-          if($dk["kriteria"]["kode"] == $kh) {
+          if($dk["kriteria"]["kd_kriteria"] == $kh) {
             if(isset($dk["subkriteria"])) {
               $nilai = (float)$dk["subkriteria"]["nilai"];
             } else if(isset($dk["nilai"])) {
@@ -348,7 +354,7 @@
 
       $yi = $max - $min;
       $data_result[] = [
-        "kode" => $d["alternatif"]["kode"],
+        "kd_alternatif" => $d["alternatif"]["kd_alternatif"],
         "nama" => $d["alternatif"]["nama"],
         "min" => $min,
         "max" => $max,

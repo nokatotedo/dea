@@ -177,7 +177,7 @@
                         <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kd_alternatif"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
@@ -188,7 +188,7 @@
                           <?php
                             $nilai = 0; $bobot = 0; $is_cost = true;
                             foreach($d["kriteria"] as $dk) {
-                              if($dk["kriteria"]["kode"] == $kh) {
+                              if($dk["kriteria"]["kd_kriteria"] == $kh) {
                                 if(isset($dk["subkriteria"])) {
                                   $nilai = (float)$dk["subkriteria"]["nilai"];
                                 } else if(isset($dk["nilai"])) {
@@ -243,7 +243,7 @@
                         <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kd_alternatif"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>
@@ -288,7 +288,7 @@
                         <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kode"] ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["kd_alternatif"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["alternatif"]["nama"] ?></h6>

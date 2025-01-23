@@ -8,12 +8,12 @@
   
   $penilaian = null;
   if(isset($_GET['id'])) {
-    $kd_alternatif = $_GET["id"];
-    $penilaian = get("SELECT * FROM tbl_penilaian WHERE kd_alternatif = $kd_alternatif");
+    $id_alternatif = $_GET["id"];
+    $penilaian = get("SELECT * FROM tbl_penilaian WHERE id_alternatif = $id_alternatif");
     if(empty($penilaian)) {
       $penilaian = null;
     } else {
-      $data_alternatif_penilaian = get("SELECT * FROM tbl_alternatif WHERE kd_alternatif = " . $kd_alternatif);
+      $data_alternatif_penilaian = get("SELECT * FROM tbl_alternatif WHERE id_alternatif = " . $id_alternatif);
     }
   }
 
@@ -28,37 +28,37 @@
   $keyword = '';
   if(isset($_GET['search']) && !empty($_GET['search'])) {
     $keyword = htmlspecialchars($_GET['search']);
-    $data = get("SELECT * FROM tbl_alternatif WHERE kd_alternatif IN (SELECT kd_alternatif FROM tbl_penilaian) AND (nama LIKE '%$keyword%' OR kode LIKE '%$keyword%')");
+    $data = get("SELECT * FROM tbl_alternatif WHERE id_alternatif IN (SELECT id_alternatif FROM tbl_penilaian) AND (nama LIKE '%$keyword%' OR kd_alternatif LIKE '%$keyword%')");
   } else {
-    $data = get("SELECT * FROM tbl_alternatif WHERE kd_alternatif IN (SELECT kd_alternatif FROM tbl_penilaian)");
+    $data = get("SELECT * FROM tbl_alternatif WHERE id_alternatif IN (SELECT id_alternatif FROM tbl_penilaian)");
   }
 
-  $alternatif = get("SELECT kd_alternatif, nama, kode FROM tbl_alternatif");
-  $kriteria = get("SELECT kd_kriteria, nama, kode FROM tbl_kriteria");
-  $sub_kriteria = get("SELECT kd_sub, kd_kriteria, nama, nilai FROM tbl_subkriteria");
+  $alternatif = get("SELECT id_alternatif, nama, kd_alternatif FROM tbl_alternatif");
+  $kriteria = get("SELECT id_kriteria, nama, kd_kriteria FROM tbl_kriteria");
+  $sub_kriteria = get("SELECT id_sub, id_kriteria, nama, nilai FROM tbl_subkriteria");
 
   if(isset($_POST['create'])) {
-    $kd_alternatif = $_POST['kd_alternatif'];
+    $id_alternatif = $_POST['id_alternatif'];
     $data = [];
 
     foreach($kriteria as $k) {
-      $kd_kriteria = $_POST["kd_kriteria_" . $k["kd_kriteria"]];
+      $id_kriteria = $_POST["id_kriteria_" . $k["id_kriteria"]];
       $this_sub_kriteria = array_filter($sub_kriteria, function ($sub) use ($k) {
-        return $sub['kd_kriteria'] == $k['kd_kriteria'];
+        return $sub['id_kriteria'] == $k['id_kriteria'];
       });
 
       if(!empty($this_sub_kriteria)) {
-        $kd_sub = $_POST["kd_sub_" . $k["kd_kriteria"]];
+        $id_sub = $_POST["id_sub_" . $k["id_kriteria"]];
         $nilai = null;
       } else {
-        $kd_sub = null;
-        $nilai = $_POST["nilai_sub_" . $k["kd_kriteria"]];
+        $id_sub = null;
+        $nilai = $_POST["nilai_sub_" . $k["id_kriteria"]];
       }
 
       $data[] = [
-        "kd_alternatif" => $kd_alternatif,
-        "kd_kriteria" => $kd_kriteria,
-        "kd_sub" => $kd_sub,
+        "id_alternatif" => $id_alternatif,
+        "id_kriteria" => $id_kriteria,
+        "id_sub" => $id_sub,
         "nilai" => $nilai
       ];
     }
@@ -67,32 +67,32 @@
   }
 
   if(isset($_POST['update'])) {
-    $kd_alternatif = $_POST['kd_alternatif_update'];
+    $id_alternatif = $_POST['id_alternatif_update'];
     $data = [];
 
     foreach($kriteria as $k) {
-      $kd_kriteria = $_POST["kd_kriteria_update_" . $k["kd_kriteria"]];
+      $id_kriteria = $_POST["id_kriteria_update_" . $k["id_kriteria"]];
       $this_sub_kriteria = array_filter($sub_kriteria, function ($sub) use ($k) {
-        return $sub['kd_kriteria'] == $k['kd_kriteria'];
+        return $sub['id_kriteria'] == $k['id_kriteria'];
       });
 
       if(!empty($this_sub_kriteria)) {
-        $kd_sub = $_POST["kd_sub_update_" . $k["kd_kriteria"]];
+        $id_sub = $_POST["id_sub_update_" . $k["id_kriteria"]];
         $nilai = null;
       } else {
-        $kd_sub = null;
-        $nilai = $_POST["nilai_sub_update_" . $k["kd_kriteria"]];
+        $id_sub = null;
+        $nilai = $_POST["nilai_sub_update_" . $k["id_kriteria"]];
       }
 
       $data[] = [
-        "kd_alternatif" => $kd_alternatif,
-        "kd_kriteria" => $kd_kriteria,
-        "kd_sub" => $kd_sub,
+        "id_alternatif" => $id_alternatif,
+        "id_kriteria" => $id_kriteria,
+        "id_sub" => $id_sub,
         "nilai" => $nilai
       ];
     }
 
-    update_penilaian($kd_alternatif, $data);
+    update_penilaian($id_alternatif, $data);
   }
 ?>
 
@@ -119,37 +119,37 @@
         <div class="modal-body">
           <form method="post">
             <div class="mb-2">
-              <label for="kd_alternatif_update_value">Alternatif</label>
-              <input type="text" class="form-control" id="kd_alternatif_update" name="kd_alternatif_update" value="<?php echo $data_alternatif_penilaian[0]["kd_alternatif"] ?>" hidden required>
-              <input type="text" class="form-control" id="kd_alternatif_update_value" name="kd_alternatif_update_value" value="<?php echo $data_alternatif_penilaian[0]["kode"] ?> - <?php echo $data_alternatif_penilaian[0]["nama"] ?>" disabled required>
+              <label for="id_alternatif_update_value">Alternatif</label>
+              <input type="text" class="form-control" id="id_alternatif_update" name="id_alternatif_update" value="<?php echo $data_alternatif_penilaian[0]["id_alternatif"] ?>" hidden required>
+              <input type="text" class="form-control" id="id_alternatif_update_value" name="id_alternatif_update_value" value="<?php echo $data_alternatif_penilaian[0]["kd_alternatif"] ?> - <?php echo $data_alternatif_penilaian[0]["nama"] ?>" disabled required>
             </div>
             <?php foreach($kriteria as $k) : ?>
             <div class="mb-2">
-              <input type="number" hidden value="<?php echo $k["kd_kriteria"] ?>" name="kd_kriteria_update_<?php echo $k["kd_kriteria"] ?>" id="kd_kriteria_update_<?php echo $k["kd_kriteria"] ?>">
+              <input type="number" hidden value="<?php echo $k["id_kriteria"] ?>" name="id_kriteria_update_<?php echo $k["id_kriteria"] ?>" id="id_kriteria_update_<?php echo $k["id_kriteria"] ?>">
               <?php
                 $this_sub_kriteria = array_filter($sub_kriteria, function ($sub) use ($k) {
-                  return $sub['kd_kriteria'] == $k['kd_kriteria'];
+                  return $sub['id_kriteria'] == $k['id_kriteria'];
                 });
 
                 $this_penilaian_kriteria = array_filter($penilaian, function ($p) use ($k) {
-                  return $p["kd_kriteria"] == $k["kd_kriteria"];
+                  return $p["id_kriteria"] == $k["id_kriteria"];
                 });
                 $this_penilaian_kriteria = reset($this_penilaian_kriteria);
                 
                 if (!empty($this_sub_kriteria)) : ?>
-                  <label for="kd_sub_update_<?php echo $k["kd_kriteria"] ?>"><?php echo $k["kode"] ?> - <?php echo $k["nama"] ?></label>
-                  <select class="form-select" id="kd_sub_update_<?php echo $k['kd_kriteria']; ?>" name="kd_sub_update_<?php echo $k['kd_kriteria']; ?>" required>
-                      <option <?php echo !isset($this_penilaian_kriteria["kd_sub"]) ? "selected" : "" ?> disabled value="">Pilih</option>
+                  <label for="id_sub_update_<?php echo $k["id_kriteria"] ?>"><?php echo $k["kd_kriteria"] ?> - <?php echo $k["nama"] ?></label>
+                  <select class="form-select" id="id_sub_update_<?php echo $k['id_kriteria']; ?>" name="id_sub_update_<?php echo $k['id_kriteria']; ?>" required>
+                      <option <?php echo !isset($this_penilaian_kriteria["id_sub"]) ? "selected" : "" ?> disabled value="">Pilih</option>
                       <?php foreach ($this_sub_kriteria as $sub) : ?>
-                        <option value="<?php echo $sub['kd_sub']; ?>"
+                        <option value="<?php echo $sub['id_sub']; ?>"
                         <?php
-                          echo $this_penilaian_kriteria && $this_penilaian_kriteria["kd_sub"] == $sub["kd_sub"] ? "selected" : ""
+                          echo $this_penilaian_kriteria && $this_penilaian_kriteria["id_sub"] == $sub["id_sub"] ? "selected" : ""
                         ?>><?php echo $sub['nama']; ?></option>
                       <?php endforeach; ?>
                   </select>
               <?php else : ?>
-                  <label for="nilai_sub_update_<?php echo $k["kd_kriteria"] ?>"><?php echo $k["kode"] ?> - <?php echo $k["nama"] ?></label>
-                  <input type="number" class="form-control" id="nilai_sub_update_<?php echo $k['kd_kriteria']; ?>" name="nilai_sub_update_<?php echo $k['kd_kriteria']; ?>" step="0.01" min="0" placeholder="Nilai"
+                  <label for="nilai_sub_update_<?php echo $k["id_kriteria"] ?>"><?php echo $k["kd_kriteria"] ?> - <?php echo $k["nama"] ?></label>
+                  <input type="number" class="form-control" id="nilai_sub_update_<?php echo $k['id_kriteria']; ?>" name="nilai_sub_update_<?php echo $k['id_kriteria']; ?>" step="0.01" min="0" placeholder="Nilai"
                     value="<?php echo isset($this_penilaian_kriteria["nilai"]) ? $this_penilaian_kriteria["nilai"] : 0 ?>"
                   required/>
               <?php endif; ?>
@@ -175,39 +175,39 @@
         <div class="modal-body">
           <form method="post">
             <div class="mb-2">
-              <label for="kd_alternatif">Alternatif</label>
-              <select class="form-select" id="kd_alternatif" name="kd_alternatif" required>
+              <label for="id_alternatif">Alternatif</label>
+              <select class="form-select" id="id_alternatif" name="id_alternatif" required>
                 <option disabled selected value="">Pilih</option>
                 <?php foreach($alternatif as $a) : ?>
                   <?php
-                    $query = "SELECT * FROM tbl_penilaian WHERE kd_alternatif = " . (int)$a["kd_alternatif"];
+                    $query = "SELECT * FROM tbl_penilaian WHERE id_alternatif = " . (int)$a["id_alternatif"];
                     $result = get($query);
                     if(empty($result)) :
                   ?>
-                    <option value="<?php echo $a["kd_alternatif"] ?>"><?php echo $a["kode"] ?> - <?php echo $a["nama"] ?></option>
+                    <option value="<?php echo $a["id_alternatif"] ?>"><?php echo $a["kd_alternatif"] ?> - <?php echo $a["nama"] ?></option>
                   <?php endif; ?>
                 <?php endforeach; ?>
               </select>
             </div>
             <?php foreach($kriteria as $k) : ?>
             <div class="mb-2">
-              <input type="number" hidden value="<?php echo $k["kd_kriteria"] ?>" name="kd_kriteria_<?php echo $k["kd_kriteria"] ?>" id="kd_kriteria_<?php echo $k["kd_kriteria"] ?>">
+              <input type="number" hidden value="<?php echo $k["id_kriteria"] ?>" name="id_kriteria_<?php echo $k["id_kriteria"] ?>" id="id_kriteria_<?php echo $k["id_kriteria"] ?>">
               <?php
                 $this_sub_kriteria = array_filter($sub_kriteria, function ($sub) use ($k) {
-                  return $sub['kd_kriteria'] == $k['kd_kriteria'];
+                  return $sub['id_kriteria'] == $k['id_kriteria'];
                 });
                 
                 if (!empty($this_sub_kriteria)) : ?>
-                  <label for="kd_sub_<?php echo $k["kd_kriteria"] ?>"><?php echo $k["kode"] ?> - <?php echo $k["nama"] ?></label>
-                  <select class="form-select" id="kd_sub_<?php echo $k['kd_kriteria']; ?>" name="kd_sub_<?php echo $k['kd_kriteria']; ?>" required>
+                  <label for="id_sub_<?php echo $k["id_kriteria"] ?>"><?php echo $k["kd_kriteria"] ?> - <?php echo $k["nama"] ?></label>
+                  <select class="form-select" id="id_sub_<?php echo $k['id_kriteria']; ?>" name="id_sub_<?php echo $k['id_kriteria']; ?>" required>
                     <option disabled selected value="">Pilih</option>
                     <?php foreach ($this_sub_kriteria as $sub) : ?>
-                        <option value="<?php echo $sub['kd_sub']; ?>"><?php echo $sub['nama']; ?></option>
+                        <option value="<?php echo $sub['id_sub']; ?>"><?php echo $sub['nama']; ?></option>
                     <?php endforeach; ?>
                   </select>
               <?php else : ?>
-                  <label for="nilai_sub_<?php echo $k["kd_kriteria"] ?>"><?php echo $k["kode"] ?> - <?php echo $k["nama"] ?></label>
-                  <input type="number" class="form-control" id="nilai_sub_<?php echo $k['kd_kriteria']; ?>" name="nilai_sub_<?php echo $k['kd_kriteria']; ?>" step="0.01" min="0" placeholder="Nilai" required/>
+                  <label for="nilai_sub_<?php echo $k["id_kriteria"] ?>"><?php echo $k["kd_kriteria"] ?> - <?php echo $k["nama"] ?></label>
+                  <input type="number" class="form-control" id="nilai_sub_<?php echo $k['id_kriteria']; ?>" name="nilai_sub_<?php echo $k['id_kriteria']; ?>" step="0.01" min="0" placeholder="Nilai" required/>
               <?php endif; ?>
             </div>
             <?php endforeach; ?>
@@ -380,14 +380,14 @@
                         <h6 class="fw-normal mb-0"><?php echo $index + 1 ?></h6>
                       </td>
                       <td class="border-bottom-0">
-                        <h6 class="fw-normal mb-0"><?php echo $d["kode"] ?></h6>
+                        <h6 class="fw-normal mb-0"><?php echo $d["kd_alternatif"] ?></h6>
                       </td>
                       <td class="border-bottom-0">
                         <h6 class="fw-normal mb-0"><?php echo $d["nama"] ?></h6>
                       </td>
                       <td class="border-bottom-0 d-flex gap-2">
-                        <a href="penilaian_read.php?<?php echo $keyword ? "search=" . urlencode($keyword) . "&" : "" ?>id=<?php echo $d["kd_alternatif"] ?>" class="btn btn-warning" data-bs-target="#exampleModal1">Edit</a>
-                        <a href="penilaian_delete.php?delete=<?php echo $d["kd_alternatif"] ?>" class="btn btn-danger">Hapus</a>
+                        <a href="penilaian_read.php?<?php echo $keyword ? "search=" . urlencode($keyword) . "&" : "" ?>id=<?php echo $d["id_alternatif"] ?>" class="btn btn-warning" data-bs-target="#exampleModal1">Edit</a>
+                        <a href="penilaian_delete.php?delete=<?php echo $d["id_alternatif"] ?>" class="btn btn-danger">Hapus</a>
                       </td>
                     </tr>
                     <?php endforeach; ?>
