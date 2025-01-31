@@ -6,6 +6,10 @@
     header("location:login.php");
   }
 
+  if($_SESSION['role'] == "User") {
+    header("location:index.php");
+  }
+
   $first_head = ["No.", "Kode Alternatif", "Nama Alternatif"];
   $kriteria_head = get_perhitungan_head();
   $head = array_merge($first_head, $kriteria_head);
@@ -52,6 +56,9 @@
                 <span class="hide-menu">Dashboard</span>
               </a>
             </li>
+            <?php
+                if($_SESSION['role'] != "User") :
+            ?>
             <li class="nav-small-cap">
               <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
               <span class="hide-menu">MASTER DATA</span>
@@ -100,6 +107,7 @@
                 <span class="hide-menu">Proses Perhitungan</span>
               </a>
             </li>
+            <?php endif; ?>
             <li class="sidebar-item">
               <a class="sidebar-link" href="hasil_read.php" aria-expanded="false">
                 <span>

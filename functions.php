@@ -9,6 +9,7 @@
       $user = mysqli_fetch_assoc($query);
 
       $_SESSION['login'] = $user['nama'];
+      $_SESSION['role'] = $user['role'];
       header('location:index.php');
     } else {
       header('location:login.php?error=true');
