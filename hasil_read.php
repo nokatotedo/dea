@@ -21,6 +21,8 @@
     $max_values[] = number_format($d['max'], 3);
     $min_values[] = number_format($d['min'], 3);
   }
+
+  $criterias = get("SELECT * FROM tbl_kriteria");
 ?>
 
 <!doctype html>
@@ -220,8 +222,13 @@
                 <?php if(isset($data[0])) : ?>
                 <div class="mt-3 text-center fst-italic">Dari hasil penilaian menggunakan metode MOORA, disimpulkan bahwa alternatif lokasi strategis pembangunan komplek perumahan ada di <span class="fw-bolder"><?php echo $data[0]["nama"] ?></span>.<br>Klik tombol cetak untuk export data.</div>
                 <?php endif; ?>
-                <div class="w-full text-center">
-                  <button id="download" class="btn btn-outline-success mt-3" onclick="generateFile()">Cetak</button>
+                <div class="d-flex gap-2 justify-content-center">
+                  <div class="w-full text-center">
+                    <button id="download" class="btn btn-outline-success mt-3" onclick="generateFile()">Cetak Hasil</button>
+                  </div>
+                  <div class="w-full text-center">
+                    <button id="download" class="btn btn-outline-success mt-3" onclick="generatePDF('<?php echo $data[0]['nama']; ?>')">Cetak Laporan</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -236,6 +243,7 @@
   <script src="assets/js/app.min.js"></script>
   <script src="assets/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="assets/libs/simplebar/dist/simplebar.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js" integrity="sha512-YcsIPGdhPK4P/uRW6/sruonlYj+Q7UHWeKfTAkBW+g83NKM+jMJFJ4iAPfSnVp7BKD4dKMHmVSvICUbE/V1sSw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
     var chart = {
@@ -356,6 +364,50 @@
       }
 
       html2pdf().set(options).from(wrapper).save()
+    }
+
+    function generatePDF(location) {
+      const criterias =  <?php echo json_encode($criterias); ?>;
+      const doc = new jsPDF();
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      let y = 30
+      const x = 20
+      const maxWidth = 180
+
+      doc.text("Kepada Pihak Terkait,", x, y)
+      y += 10
+
+      doc.text(
+        "Berdasarkan hasil analisis sistem kami, dengan metode MOORA (Multi-Objective Optimization on the Basis of Ratio Analysis), kami merekomendasikan",
+        x, y, { maxWidth }
+      );
+      y += 15
+
+      doc.setFont("helvetica", "bold");
+      doc.text(location, x, y);
+      y += 10
+
+      doc.setFont("helvetica", "normal");
+      const criteriasText = `Analisis ini mempertimbangkan berbagai kriteria multi-criteria decision making (MCDM), termasuk ${
+        criterias.length > 1
+        ? criterias.slice(0, -1).map(criteria => criteria.nama.trim().toLowerCase()).join(", ") + " dan " + criterias[criterias.length - 1].nama.trim().toLowerCase()
+        : criterias[0].nama.trim().toLowerCase()
+      }`;
+      doc.text(
+        `sebagai pilihan terbaik untuk pembangunan kompleks perumahan PT Graha Citra Mulia. ${criteriasText}. Hasil evaluasi menunjukkan bahwa lokasi ini memiliki skor optimal dan memenuhi kebutuhan yang telah ditetapkan oleh PT Graha Citra Mulia.`,
+        x, y, { maxWidth }
+      );
+      y += 60
+
+      doc.text("Hormat kami,", x, y);
+      y += 20
+
+      doc.setFont("helvetica", "bold");
+      doc.text("PT Graha Citra Mulia", x, y);
+
+      doc.save("Rekomendasi.pdf");
     }
 
     function getFormattedDate() {
