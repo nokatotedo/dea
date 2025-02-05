@@ -21,8 +21,6 @@
     $max_values[] = number_format($d['max'], 3);
     $min_values[] = number_format($d['min'], 3);
   }
-
-  $criterias = get("SELECT * FROM tbl_kriteria");
 ?>
 
 <!doctype html>
@@ -183,7 +181,7 @@
                 <div class="me-4">Min</div>
               </div>
               <div class="table-responsive mt-3">
-                <div class="text-center fs-6 fw-bolder mb-3 d-none" id="table-title">Alternatif Lokasi Strategis Pembangunan Komplek Perumahan</div>
+                <div class="text-center fs-4 fw-bolder mb-3 d-none" id="table-title">Laporan Perangkingan Sistem Pembuat Keputusan</br>Penentuan Lokasi Strategis Pembangunan Komplek Perumahan</div>
                 <table class="table text-nowrap mb-0 align-middle" style="border: 1px solid #ebf1f6" id="table">
                   <thead class="text-dark fs-4">
                     <tr>
@@ -219,15 +217,19 @@
                     <?php endforeach; ?>
                   </tbody>
                 </table>
+                <div class="flex-column align-items-end mt-5 d-none" id="signature-date">
+                  <p class="mb-0" id="date"></p>
+                  <p class="mb-0 mt-5 pt-5">Direktur PT Graha Citra Mulia</p>
+                </div>
                 <?php if(isset($data[0])) : ?>
                 <div class="mt-3 text-center fst-italic">Dari hasil penilaian menggunakan metode MOORA, disimpulkan bahwa alternatif lokasi strategis pembangunan komplek perumahan ada di <span class="fw-bolder"><?php echo $data[0]["nama"] ?></span>.<br>Klik tombol cetak untuk export data.</div>
                 <?php endif; ?>
                 <div class="d-flex gap-2 justify-content-center">
                   <div class="w-full text-center">
-                    <button id="download" class="btn btn-outline-success mt-3" onclick="generateFile()">Cetak Hasil</button>
+                    <button id="download" class="btn btn-outline-success mt-3" onclick="generateResult()">Cetak Hasil</button>
                   </div>
                   <div class="w-full text-center">
-                    <button id="download" class="btn btn-outline-success mt-3" onclick="generatePDF('<?php echo $data[0]['nama']; ?>')">Cetak Laporan</button>
+                    <button id="download" class="btn btn-outline-success mt-3" onclick="generateRecommendation('<?php echo $data[0]['nama']; ?>')">Cetak Rekomendasi</button>
                   </div>
                 </div>
               </div>
@@ -338,22 +340,40 @@
     var chart = new ApexCharts(document.querySelector("#chart"), chart);
     chart.render();
 
-    function generateFile() {
+    function setDate() {
+      const today = new Date()
+      const options = { day: 'numeric', month: 'long', year: 'numeric' }
+      const formattedDate = today.toLocaleDateString('id-ID', options)
+      document.getElementById('date').textContent = `Padang, ${formattedDate}`
+    }
+
+    function generateResult() {
       const title = document.getElementById('table-title')
+      const signatureDate = document.getElementById('signature-date')
       const element = document.getElementById('table')
       const rows = table.querySelectorAll('tbody tr');
       
       const clonedTitle = title.cloneNode(true)
+      const clonedSignatureDate = signatureDate.cloneNode(true)
       clonedTitle.classList.remove('d-none')
+      clonedSignatureDate.classList.remove('d-none')
+      clonedSignatureDate.classList.add('d-flex')
       const wrapper = document.createElement('div')
       wrapper.appendChild(clonedTitle)
       wrapper.appendChild(element.cloneNode(true))
+      wrapper.appendChild(clonedSignatureDate)
 
       const clonedTable = wrapper.querySelector('table')
       const clonedRows = clonedTable.querySelectorAll('tbody tr');
-      clonedRows[0].style.backgroundColor = '#d4edda'
+      const clonedHeaders = clonedTable.querySelectorAll('thead tr th');
+      clonedHeaders[2].remove();
+      clonedHeaders[3].remove();
 
-      console.log(wrapper)
+      clonedRows[0].style.backgroundColor = '#d4edda'
+      clonedRows.forEach(row => {
+        row.children[2].remove()
+        row.children[2].remove()
+      });
       
       const options = {
         margin: 10,
@@ -366,48 +386,63 @@
       html2pdf().set(options).from(wrapper).save()
     }
 
-    function generatePDF(location) {
-      const criterias =  <?php echo json_encode($criterias); ?>;
+    function generateRecommendation(location) {
       const doc = new jsPDF();
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
-      let y = 30
-      const x = 20
-      const maxWidth = 180
-
-      doc.text("Kepada Pihak Terkait,", x, y)
-      y += 10
-
-      doc.text(
-        "Berdasarkan hasil analisis sistem kami, dengan metode MOORA (Multi-Objective Optimization on the Basis of Ratio Analysis), kami merekomendasikan",
-        x, y, { maxWidth }
-      );
-      y += 15
+      let y = 20;
+      const x = 20;
+      const maxWidth = 170;
 
       doc.setFont("helvetica", "bold");
-      doc.text(location, x, y);
-      y += 10
+      doc.setFontSize(14);
+      const title = "Rekomendasi Lokasi Strategis Pembangunan Komplek Perumahan";
+      const textWidth = doc.getTextWidth(title);
+      const pageWidth = doc.internal.pageSize.width;
+      doc.text(title, (pageWidth - textWidth) / 2, y);
+      y += 10;
 
       doc.setFont("helvetica", "normal");
-      const criteriasText = `Analisis ini mempertimbangkan berbagai kriteria multi-criteria decision making (MCDM), termasuk ${
-        criterias.length > 1
-        ? criterias.slice(0, -1).map(criteria => criteria.nama.trim().toLowerCase()).join(", ") + " dan " + criterias[criterias.length - 1].nama.trim().toLowerCase()
-        : criterias[0].nama.trim().toLowerCase()
-      }`;
-      doc.text(
-        `sebagai pilihan terbaik untuk pembangunan kompleks perumahan PT Graha Citra Mulia. ${criteriasText}. Hasil evaluasi menunjukkan bahwa lokasi ini memiliki skor optimal dan memenuhi kebutuhan yang telah ditetapkan oleh PT Graha Citra Mulia.`,
-        x, y, { maxWidth }
-      );
-      y += 60
+      doc.setFontSize(12);
+      const paragraph = `Berdasarkan hasil analisis sistem terkait penentuan lokasi strategis pembangunan komplek perumahan menggunakan metode MOORA, ` +
+        `${location} terpilih menjadi alternatif terbaik. Lokasi ini direkomendasikan sebagai kawasan paling strategis untuk pembangunan komplek perumahan ` +
+        `karena memenuhi berbagai aspek utama yang mendukung keberlanjutan serta memberikan keuntungan bagi pengembang dan calon penghuni.`;
+      const wrappedParagraph = doc.splitTextToSize(paragraph, maxWidth);
+      doc.text(wrappedParagraph, x, y);
+      y += wrappedParagraph.length * 6;
 
+      doc.text("Berikut adalah lima alasan utama direkomendasikannya " + location + " sebagai lokasi strategis:", x, y - 5);
+      const points = [
+        "1. Ketersediaan Lahan yang Memadai\n" + location + " memiliki luas lahan yang cukup untuk mendukung pembangunan komplek perumahan. " +
+        "Lahan yang tersedia juga memiliki kondisi yang relatif datar, sehingga memudahkan proses konstruksi dan mengurangi biaya pematangan lahan.",
+        "2. Harga Tanah yang Kompetitif\nDibandingkan dengan alternatif lain, harga tanah di " + location + " relatif lebih terjangkau. " +
+        "Hal ini memberikan keuntungan bagi pengembang dalam menekan biaya investasi awal serta memungkinkan harga jual rumah yang lebih kompetitif bagi masyarakat.",
+        "3. Potensi Perkembangan Wilayah yang Baik\n" + location + " menunjukkan potensi perkembangan yang tinggi dengan adanya proyek infrastruktur dan fasilitas umum yang mulai berkembang di sekitar lokasi. " +
+        "Keberadaan akses jalan yang memadai serta rencana pengembangan ekonomi daerah menjadikan lokasi ini prospektif untuk jangka panjang.",
+        "4. Jarak yang Relatif Dekat ke Pusat Kota\nLokasi " + location + " lebih dekat ke pusat kota dibandingkan dengan alternatif lainnya. " +
+        "Jarak yang lebih dekat ini memudahkan aksesibilitas bagi penghuni komplek perumahan untuk bekerja, bersekolah, atau mendapatkan layanan kesehatan dan fasilitas umum lainnya.",
+        "5. Kondisi Alam yang Mendukung\nKondisi geografis " + location + " dinilai lebih stabil dibandingkan beberapa alternatif lain yang memiliki risiko bencana alam seperti banjir atau tanah longsor. " +
+        "Faktor ini sangat penting dalam perencanaan perumahan untuk menjamin keamanan dan kenyamanan penghuni di masa depan."
+      ];
+
+      points.forEach((point,index) => {
+        const wrappedPoint = doc.splitTextToSize(point, maxWidth);
+        doc.text(wrappedPoint, x, y);
+        y += (wrappedPoint.length * 6);
+      });
+
+      y += 10;
+      const today = new Date()
+      const options = { day: 'numeric', month: 'long', year: 'numeric' }
+      const formattedDate = today.toLocaleDateString('id-ID', options)
+      doc.text("Padang, " + formattedDate, x, y);
+      y += 5;
       doc.text("Hormat kami,", x, y);
-      y += 20
+      y += 25;
+      doc.text("Direktur PT Graha Citra Mulia", x, y);
 
-      doc.setFont("helvetica", "bold");
-      doc.text("PT Graha Citra Mulia", x, y);
-
-      doc.save("Rekomendasi.pdf");
+      doc.save("Rekomendasi - " + getFormattedDate() + ".pdf");
     }
 
     function getFormattedDate() {
@@ -417,6 +452,8 @@
       const day = String(today.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     }
+
+    setDate()
   </script>
 </body>
 
